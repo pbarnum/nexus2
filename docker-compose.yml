@@ -1,0 +1,47 @@
+x-template: &template
+  image: nexus2
+  build:
+    target: builder
+    args:
+      build: local
+    context: .
+    dockerfile: ./Dockerfile
+  working_dir: /app/cmd
+  volumes:
+    - ./:/app
+  networks:
+    - default
+
+version: '3.4'
+services:
+  api:
+    <<: *template
+    container_name: nexus2_api
+    working_dir: /app/cmd/api
+    command: gowatch
+    ports:
+      - "4000:80"
+    networks:
+      - default
+      - ms-net
+
+  db:
+    image: nouchka/sqlite3:latest
+    container_name: nexus2-db
+    stdin_open: true
+    tty: true
+    environment:
+      - ./cmd/api/.env
+    ports:
+      - "9000:9000"
+    volumes:
+      - db-data:/root/db/
+    networks:
+      - default
+
+volumes:
+  db-data:
+
+networks:
+  ms-net:
+    name: ms-net

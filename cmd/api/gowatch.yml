@@ -1,0 +1,4 @@
+appname: nexus2_api
+output: ./nexus2_api
+watch_paths:
+  - ../..
